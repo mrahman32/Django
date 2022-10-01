@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-eov+rer_$4*q&g6mx8v8!uz8#ic5lr@tc)3s9#s&@-4efe-qy@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['btfored.localhost']
+ALLOWED_HOSTS = []
 
 
 # Application definition

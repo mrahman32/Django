@@ -67,11 +67,14 @@ class Student(models.Model):
         # Open up ABI for calling functions
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         json_file_path = os.path.join(
-            BASE_DIR, 'aeibt/contractsjson/student_record_compiled_code.json')
+            BASE_DIR, "aeibt/contractsjson/student_record_compiled_code.json"
+        )
         with open(json_file_path) as file:
             student_json = json.load(file)
 
-        bytecode = student_json["contracts"]["InfoStorage.sol"]["InfoStorage"]["evm"]["bytecode"]["object"]
+        bytecode = student_json["contracts"]["InfoStorage.sol"]["InfoStorage"]["evm"][
+            "bytecode"
+        ]["object"]
         print(bytecode)
 
         # get abi
@@ -89,11 +92,14 @@ class Student(models.Model):
         w3.eth.default_account = my_address
 
         student_storage_contract = w3.eth.contract(
-            address="0x136De3eE026CaE0a11d00424153B5d317784A071", abi=abi, bytecode=bytecode)
+            address="0xf528118C6a6bBB61b47Ff92B4431C9b7277E790a",
+            abi=abi,
+            bytecode=bytecode,
+        )
 
         self.added_date = datetime.now()
         cr_date = self.added_date  # don't use str here
-        dateStr = cr_date.strftime('%m/%d/%Y')
+        dateStr = cr_date.strftime("%m/%d/%Y")
 
         return_after_added = student_storage_contract.functions.add_new_student_record(
             self.student_name,
@@ -103,9 +109,7 @@ class Student(models.Model):
             dateStr,
             "",
             "",
-            self.student_address
-
-
+            self.student_address,
         ).transact()
 
         w3.eth.wait_for_transaction_receipt(return_after_added)
