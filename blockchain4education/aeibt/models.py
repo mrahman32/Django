@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, date
+from email.policy import default
 from importlib.resources import path
 from pyexpat import model
 from secrets import choice
@@ -123,12 +124,12 @@ class Student(models.Model):
         return super().save(self, *args, **kwargs)
 
 
-class TakenCourse(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
-    added_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
+# class TakenCourse(models.Model):
+#     student = models.ForeignKey(Student, on_delete=models.CASCADE)
+#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+#     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
+#     added_date = models.DateTimeField(auto_now_add=True)
+#     updated_date = models.DateTimeField(auto_now=True)
 
 
 class StudentDocument(models.Model):
@@ -138,3 +139,33 @@ class StudentDocument(models.Model):
     block_trans_id = models.CharField(max_length=255)
     added_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+
+
+class Teacher(models.Model):
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    teacher_id = models.CharField(max_length=100)
+    teacher_name = models.CharField(max_length=200)
+    teacher_address = models.CharField(max_length=500)
+    added_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+
+class SemesterCourse:
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    added_date = models.DateTimeField(auto_now_add=True)
+
+
+class SemesterCourseEnroll:
+    semester_course = models.ForeignKey(
+        SemesterCourse, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    added_date = models.DateTimeField(auto_now_add=True)
+
+
+class CourseClass:
+    semester_course_enroll = models.ForeignKey(
+        SemesterCourseEnroll, on_delete=models.CASCADE)
+    is_present = models.BooleanField(default=False)
+    added_date = models.DateTimeField(auto_now_add=True)
