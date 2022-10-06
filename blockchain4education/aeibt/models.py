@@ -150,22 +150,22 @@ class Teacher(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
 
 
-class SemesterCourse:
+class SemesterCourse(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     added_date = models.DateTimeField(auto_now_add=True)
 
 
-class SemesterCourseEnroll:
-    semester_course = models.ForeignKey(
-        SemesterCourse, on_delete=models.CASCADE)
+class SemesterCourseEnroll(models.Model):
+    semester_course = models.ForeignKey(SemesterCourse, on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     added_date = models.DateTimeField(auto_now_add=True)
 
 
-class CourseClass:
+class CourseClass(models.Model):
     semester_course_enroll = models.ForeignKey(
-        SemesterCourseEnroll, on_delete=models.CASCADE)
+        SemesterCourseEnroll, on_delete=models.CASCADE
+    )
     is_present = models.BooleanField(default=False)
     added_date = models.DateTimeField(auto_now_add=True)

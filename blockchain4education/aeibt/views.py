@@ -3,44 +3,58 @@ from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from django.urls import reverse
 from django.views import generic
+from web3 import Web3
+from .viewmodels.StudentViewModel import StudentBt
+import json
+import os
 
 # Create your views here.
 
-# def index(request):
-#     latest_question_list = Question.objects.order_by('-pub_date')[:5]
-#     template = loader.get_template('aeibt/index.html')
-#     context = {
-#         'latest_question_list': latest_question_list,
-#     }
-#     return HttpResponse(template.render(context, request))
 
+def index(request):
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    json_file_path = os.path.join(
+        BASE_DIR, "aeibt/contractsjson/student_record_compiled_code.json"
+    )
+    with open(json_file_path) as file:
+        student_json = json.load(file)
 
-class IndexView(generic.ListView):
-    template_name = "aeibt/index.html"
-    context_object_name = "latest_question_list"
+    # get bytecode
+    bytecode = student_json["contracts"]["InfoStorage.sol"]["InfoStorage"]["evm"][
+        "bytecode"
+    ]["object"]
 
-    def get_queryset(self):
-        """Return the last five published questions."""
-        return Question.objects.order_by("-pub_date")[:5]
+    # get abi
+    abi = student_json["contracts"]["InfoStorage.sol"]["InfoStorage"]["abi"]
+    w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
 
+    chain_id = 1337
+    # my_address = os.getenv("MY_ADDRESS")
+    # private_key = os.getenv("MY_PRIVATE_KEY")
+    student_storage_contract = w3.eth.contract(
+        address="0xf528118C6a6bBB61b47Ff92B4431C9b7277E790a", abi=abi, bytecode=bytecode
+    )
 
-# def detail(request, question_id):
-#     return HttpResponse("You're looking at question %s." % question_id)
+    results = student_storage_contract.functions.get_all_students().call()
+    students = []
+    for v in results:
+        st = StudentBt(
+            v[0],
+            v[1],
+            v[2],
+            v[3],
+            v[4],
+            v[5],
+            v[6],
+            v[7],
+        )
+        students.append(st)
 
-
-class DetailView(generic.DetailView):
-    model = Question
-    template_name = "aeibt/detail.html"
-
-
-# def results(request, question_id):
-#     response = "You're looking at the results of question %s."
-#     return HttpResponse(response % question_id)
-
-
-class ResultsView(generic.DetailView):
-    model = Question
-    template_name = "aeibt/results.html"
+    return render(
+        request,
+        "aeibt/index.html",
+        {"btstudents": students, "error_message": "no student found in the blockchain"},
+    )
 
 
 def vote(request, question_id):

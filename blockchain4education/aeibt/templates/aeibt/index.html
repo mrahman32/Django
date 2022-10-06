@@ -1,11 +1,30 @@
-{% if latest_question_list%}
+<h1>Student List from the Blockchain</h1>
+{% if btstudents%}
     <ul>
-        
-        {% for question in latest_question_list %}
-        <li>
-            <a href="{% url 'polls:results' question.id%}">{{question.question_text}}</a>
-        </li>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>name</th>
+                    <th>roll</th>
+                    <th>dept</th>
+                    <th>added date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for btstudent in btstudents %}
+                <tr>
+                    <td>{{btstudent.name}}</td>
+                    <td>{{btstudent.roll}}</td>
+                    <td>{{btstudent.dept}}</td>
+                    <td>{{btstudent.added_date}}</td>
 
-        {% endfor %}
+                </tr>
+                {% endfor %}
+                
+            </tbody>
+
+        </table>
+        
+        
     </ul>
-{% else %}  <p>No polls found</p> {% endif %}
+{% else %}  <p>No students found</p> {% endif %}
