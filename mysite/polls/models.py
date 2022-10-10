@@ -1,7 +1,8 @@
 import datetime
 from secrets import choice
 from django.db import models
-from traitlets import default
+
+# from traitlets import default
 from django.utils import timezone
 
 # Create your models here.
